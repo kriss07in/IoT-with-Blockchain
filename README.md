@@ -1,4 +1,4 @@
-# Solidity---Web3---Remix---Ganache---RasberryPI---IoT
+# IoT---Solidity---Web3---Remix---Ganache---RasberryPI
 
 Setup: <br>
 
