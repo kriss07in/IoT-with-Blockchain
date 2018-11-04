@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script src="./node_modules/web3/dist/web3.min.js"></script>
+
+    <script>
+
+      if (typeof web3 !== 'undefined') {
+          web3 = new Web3(web3.currentProvider);
+      } else {
+          // set the provider you want from Web3.providers
+          web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.205.143:8545")); // insert your IP address or localhost
+      }
+
+    </script>
+
+</head>
+<body>
+    <div class="container">
+
+        <h1>Sensor Repo</h1>
+
+        <h2 id="sensorReading"></h2>
+        <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
+
+        <label for="name" class="col-lg-2 control-label">Sensor ID</label>
+        <input id="sensorId" type="text">
+
+        <label for="name" class="col-lg-2 control-label">Sensor Value</label>
+        <input id="sensorValue" type="text">
+
+        <button id="button">Update Sensor Info</button>
+
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <script>
+
+      if (typeof web3 !== 'undefined') {
+          web3 = new Web3(web3.currentProvider);
+      } else {
+          // set the provider you want from Web3.providers
+          web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.205.143:8545")); //insert your IP address or localhost
+      }
+
+      web3.eth.defaultAccount = web3.eth.accounts[0];
+      var SensorRepo1 = web3.eth.contract(
+
+[
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "buySensorData",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "claimBalance",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "currSensorId",
+				"type": "uint256"
+			},
+			{
+				"name": "newSensorValue",
+				"type": "uint256"
+			}
+		],
+		"name": "setSensorValue",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"name": "newSensorId",
+				"type": "uint256"
+			},
+			{
+				"name": "newSensorName",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "sensorName",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "sensorValue",
+				"type": "uint256"
+			}
+		],
+		"name": "SensorValueSubmitted",
+		"type": "event"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getSensorNameAndId",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "sensorId",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "sensorName",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "sensorOwner",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "showBalance",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
+
+      );
+
+      var Sensor = SensorRepo1.at('0x966a9afe565fb58ecb867eb6927958032039ec22');
+      console.log(Sensor);
+
+      var sensorEvent = Sensor.SensorValueSubmitted();
+      sensorEvent.watch(function(error, result){
+     if (!error)
+         {
+             $("#loader").hide();
+             $("#sensorReading").html(result.args.sensorName + ': ' + result.args.sensorValue);
+         } else {
+             $("#loader").hide();
+             console.log(error);
+         }
+     });
+
+      $("#button").click(function() {
+      $("#loader").show();
+          Sensor.setSensorValue($("#sensorId").val(), $("#sensorValue").val());
+      });
+
+    </script>
+
+</body>
+</html>
